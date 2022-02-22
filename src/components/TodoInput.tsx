@@ -12,8 +12,11 @@ export function TodoInput({ addTask }: TodoInputProps) {
 
     function handleAddNewTask() {
         //Call addTask if task not empty and clean input value 
-        addTask(task);
-        textInputRef.current?.clear();
+        if (task) {
+            addTask(task);
+            setTask('');
+            textInputRef.current?.clear();
+        }
     }
 
     return (
@@ -25,7 +28,9 @@ export function TodoInput({ addTask }: TodoInputProps) {
                 placeholderTextColor="#B2B2B2"
                 returnKeyType="send"
                 selectionColor="#666666"
+                value={task}
                 onChangeText={setTask}
+                onSubmitEditing={handleAddNewTask}
             />
             <TouchableOpacity
                 testID="add-new-task-button"
@@ -62,7 +67,7 @@ const styles = StyleSheet.create({
     addButton: {
         backgroundColor: '#FFF',
         height: 56,
-        paddingHorizontal: 12,
+        paddingHorizontal: 15,
         justifyContent: 'center',
         alignItems: 'center',
         borderTopRightRadius: 5,

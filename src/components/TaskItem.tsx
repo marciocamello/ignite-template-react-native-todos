@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 import { Image, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
-import { ItemWrapper } from './ItemWrapper';
-
 import trashIcon from '../assets/icons/trash/trash.png'
 import editIcon from '../assets/icons/edit/edit.png'
 import cancelIcon from '../assets/icons/cancel/cancel.png'
@@ -15,7 +13,7 @@ export interface Task {
 }
 
 interface TasksListProps {
-    item: Task;
+    task: Task;
     selectedTask: Task | null;
     updateTask: (title: string) => void;
     index: number;
@@ -26,7 +24,7 @@ interface TasksListProps {
 }
 
 export function TasksItem({
-    item,
+    task,
     selectedTask,
     setSelectedTask,
     updateTask,
@@ -35,15 +33,11 @@ export function TasksItem({
     editTask,
     removeTask
 }: TasksListProps) {
-    const [taskTitle, setTaskTitle] = React.useState(item.title);
+    const [taskTitle, setTaskTitle] = React.useState(task.title);
     const textInputRef = React.useRef<TextInput>(null);
 
     useEffect(() => {
-        updateTask(taskTitle);
-    }, [taskTitle]);
-
-    useEffect(() => {
-        if (selectedTask && selectedTask.id === item.id) {
+        if (selectedTask && selectedTask.id == task.id) {
             textInputRef.current?.focus();
         } else {
             textInputRef.current?.blur();
@@ -51,19 +45,19 @@ export function TasksItem({
     }, [selectedTask]);
 
     return (
-        <ItemWrapper index={index}>
+        <View style={styles.container}>
             <View>
                 <TouchableOpacity
                     testID={`button-${index}`}
                     activeOpacity={0.7}
                     style={styles.taskButton}
-                    onPress={() => !selectedTask ? toggleTaskDone(item.id) : {}}
+                    onPress={() => !selectedTask ? toggleTaskDone(task.id) : {}}
                 >
                     <View
                         testID={`marker-${index}`}
-                        style={item.done ? styles.taskMarkerDone : styles.taskMarker}
+                        style={task.done ? styles.taskMarkerDone : styles.taskMarker}
                     >
-                        {item.done && (
+                        {task.done && (
                             <Icon
                                 name="check"
                                 size={12}
@@ -73,14 +67,16 @@ export function TasksItem({
                     </View>
 
                     <TextInput
+                        testID={`text-${index}`}
                         ref={textInputRef}
-                        value={selectedTask ? taskTitle : item.title}
-                        editable={selectedTask ? true : false}
+                        value={selectedTask?.id == task.id ? taskTitle : task.title}
+                        editable={selectedTask?.id == task.id}
                         onChangeText={setTaskTitle}
-                        style={item.done ? styles.taskTextDone : styles.taskText}
+                        style={task.done ? styles.taskTextDone : styles.taskText}
                         maxLength={30}
                         onSubmitEditing={() => {
-                            if (selectedTask) {
+                            updateTask(taskTitle);
+                            if (selectedTask?.id == task.id) {
                                 setSelectedTask(null);
                             }
                         }}
@@ -89,34 +85,42 @@ export function TasksItem({
             </View>
 
             <View style={styles.iconsContainer}>
-                {!item?.done && <TouchableOpacity
+                {!task?.done && <TouchableOpacity
                     testID={`edit-${index}`}
                     onPress={() => {
-                        if (selectedTask) {
+                        if (selectedTask?.id == task.id) {
                             setSelectedTask(null);
                         } else {
-                            editTask(item.id);
+                            editTask(task.id);
                         }
                     }}
                 >
-                    <Image source={selectedTask ? cancelIcon : editIcon} />
+                    <Image source={selectedTask?.id == task.id ? cancelIcon : editIcon} />
                 </TouchableOpacity>}
 
                 <View style={styles.iconsDivider} />
 
-                {!selectedTask && <TouchableOpacity
+                <TouchableOpacity
                     testID={`trash-${index}`}
-                    onPress={() => removeTask(item.id)}
+                    onPress={() => removeTask(task.id)}
+                    disabled={selectedTask?.id == task.id}
                 >
-                    <Image source={trashIcon} style={{ opacity: selectedTask ? 0.2 : 1 }} />
-                </TouchableOpacity>}
+                    <Image
+                        source={trashIcon}
+                        style={{ opacity: selectedTask?.id == task.id ? 0.2 : 1 }} />
+                </TouchableOpacity>
             </View>
-
-        </ItemWrapper>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
     iconsContainer: {
         flexDirection: 'row',
         alignItems: 'center',

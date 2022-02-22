@@ -1,5 +1,6 @@
 import React from 'react';
 import { FlatList } from 'react-native';
+import { ItemWrapper } from './ItemWrapper';
 import { TasksItem } from './TaskItem';
 
 export interface Task {
@@ -23,7 +24,8 @@ export function TasksList({
     toggleTaskDone,
     setSelectedTask,
     updateTask,
-    selectedTask, editTask,
+    selectedTask,
+    editTask,
     removeTask
 }: TasksListProps) {
 
@@ -34,16 +36,18 @@ export function TasksList({
             contentContainerStyle={{ paddingBottom: 24 }}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => {
-                return <TasksItem
-                    item={item}
-                    index={index}
-                    toggleTaskDone={toggleTaskDone}
-                    removeTask={removeTask}
-                    editTask={editTask}
-                    selectedTask={selectedTask}
-                    setSelectedTask={setSelectedTask}
-                    updateTask={updateTask}
-                />
+                return <ItemWrapper index={index}>
+                    <TasksItem
+                        task={item}
+                        index={index}
+                        toggleTaskDone={toggleTaskDone}
+                        removeTask={removeTask}
+                        editTask={editTask}
+                        selectedTask={selectedTask}
+                        setSelectedTask={setSelectedTask}
+                        updateTask={updateTask}
+                    />
+                </ItemWrapper>
             }}
             style={{
                 marginTop: 32

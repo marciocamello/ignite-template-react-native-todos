@@ -75,9 +75,10 @@ export function Home() {
 
     function handleEditTask(id: number) {
         //edit task
-        const task = tasks.find(task => task.id === id);
+        const task = tasks.find(task => task.id == id);
 
         if (task) {
+
             setSelectedTask(task);
         }
     }
